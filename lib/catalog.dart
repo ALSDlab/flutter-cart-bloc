@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cart_bloc/bloc/cart_bloc.dart';
 import 'package:flutter_cart_bloc/cart.dart';
 import 'package:flutter_cart_bloc/item.dart';
+import 'package:flutter_cart_bloc/main.dart';
 
 class Catalog extends StatefulWidget {
   const Catalog({super.key});
@@ -12,42 +12,38 @@ class Catalog extends StatefulWidget {
 }
 
 class _CatalogState extends State<Catalog> {
-  final List<Item> _itemList = itemList;
-
   @override
   Widget build(BuildContext context) {
-    final _cartBloc = BlocProvider.of<CartBloc>(context);
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Catalog'),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const Cart()));
-              },
-              icon: const Icon(Icons.archive)),
-        ],
-      ),
-      body: BlocBuilder<CartBloc, List<Item>>(
-        bloc: _cartBloc,
-        builder: (BuildContext context, List state) {
-          return Center(
-            child: ListView(
-              children: _itemList
+        appBar: AppBar(
+          title: const Text('Catalog'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => const Cart()));
+                },
+                icon: const Icon(Icons.archive)),
+          ],
+        ),
+        body: StreamBuilder(
+          stream: cartBloc.cartList,
+          builder: (context, snapshot) {
+            if (snapshot.data == null){
+              throw Exception('error');
+            }
+            return ListView(
+              children: cartBloc.itemList
                   .map(
-                    (item) => _buildItem(item, state, _cartBloc),
+                    (item) => _buildItem(item, snapshot.data!),
                   )
                   .toList(),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ));
   }
 
-  Widget _buildItem(Item todo, List state, CartBloc cartBloc) {
+  Widget _buildItem(Item todo, List<Item> state) {
     final isChecked = state.contains(todo);
 
     return Padding(
@@ -66,13 +62,11 @@ class _CatalogState extends State<Catalog> {
                 )
               : const Icon(Icons.check),
           onPressed: () {
-            setState(() {
-              if (isChecked) {
-                cartBloc.add(CartEvent(CartEventType.remove, todo));
-              } else {
-                cartBloc.add(CartEvent(CartEventType.add, todo));
-              }
-            });
+            if (isChecked) {
+              cartBloc.add(CartEvent(CartEventType.remove, todo));
+            } else {
+              cartBloc.add(CartEvent(CartEventType.add, todo));
+            }
           },
         ),
       ),
