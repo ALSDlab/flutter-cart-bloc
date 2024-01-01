@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cart_bloc/bloc/cart_bloc.dart';
+import 'package:flutter_cart_bloc/bloc/cart_provider.dart';
 import 'package:flutter_cart_bloc/cart.dart';
 import 'package:flutter_cart_bloc/item.dart';
-import 'package:flutter_cart_bloc/main.dart';
 
 class Catalog extends StatefulWidget {
   const Catalog({super.key});
@@ -14,6 +14,7 @@ class Catalog extends StatefulWidget {
 class _CatalogState extends State<Catalog> {
   @override
   Widget build(BuildContext context) {
+    CartBloc cartBloc = CartProvider.of(context);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Catalog'),
@@ -29,13 +30,13 @@ class _CatalogState extends State<Catalog> {
         body: StreamBuilder(
           stream: cartBloc.cartList,
           builder: (context, snapshot) {
-            if (snapshot.data == null){
+            if (snapshot.data == null) {
               throw Exception('error');
             }
             return ListView(
               children: cartBloc.itemList
                   .map(
-                    (item) => _buildItem(item, snapshot.data!),
+                    (item) => _buildItem(item, snapshot.data!, cartBloc),
                   )
                   .toList(),
             );
@@ -43,7 +44,7 @@ class _CatalogState extends State<Catalog> {
         ));
   }
 
-  Widget _buildItem(Item todo, List<Item> state) {
+  Widget _buildItem(Item todo, List<Item> state, CartBloc cartBloc) {
     final isChecked = state.contains(todo);
 
     return Padding(

@@ -11,7 +11,6 @@ class CartEvent {
 }
 
 class CartBloc {
-
   final itemList = [
     Item('맥북', 2000000),
     Item('생존코딩', 32000),
@@ -26,8 +25,8 @@ class CartBloc {
 
   Stream<List<Item>> get cartList => _cartListSubject.stream;
 
-  void add(CartEvent event){
-    switch(event.type){
+  void add(CartEvent event) {
+    switch (event.type) {
       case CartEventType.remove:
         _cartList.remove(event.item);
         break;
