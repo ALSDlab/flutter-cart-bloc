@@ -12,13 +12,12 @@ class Cart extends StatefulWidget {
 class _CartState extends State<Cart> {
   @override
   Widget build(BuildContext context) {
-    final cartBloc = BlocProvider.of<CartBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart'),
       ),
       body: BlocBuilder(
-        bloc: cartBloc,
+        bloc: BlocProvider.of<CartBloc>(context),
         builder: (BuildContext context, List state) {
           var sum = 0;
           if (state.isNotEmpty) {

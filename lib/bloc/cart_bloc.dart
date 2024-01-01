@@ -18,7 +18,7 @@ class CartBloc extends Bloc<CartEvent, List<Item>> {
   // List<Item> get initialState => [];
 
   @override
-  Stream<List<Item>> mapEventState(CartEvent event) async* {
+  Stream<List<Item>> mapEventTpState(CartEvent event) async* {
     switch (event.type) {
       case CartEventType.add:
         state.add(event.item);
